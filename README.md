@@ -48,20 +48,14 @@ To see how the feature works, watch this **demo video**:
 
 1. Clone the repository:
    ```
-   git clone <repository-url>
-   cd linkedin-about-generator
+   git clone https://github.com/Levi-Noa/project_all_files.git
    ```
 
-2. Install the required Python packages:
-   ```
-   pip install -r requirements.txt
-   ```
-
-3. Rename `.envTemplate` to `.env` and set the environment variables:
+2. Rename `.envTemplate` to `.env` and set the environment variables:
    ```
    mv .envTemplate .env
    ```
-   Edit the `.env` file to set your environment variables:
+3. Edit the `.env` file to set your environment variables:
    ```plaintext
    GOOGLE_API_KEY=<Set-your_google_api_key_here>
    MONGO_URI=<Set-your-mongo-uri>
