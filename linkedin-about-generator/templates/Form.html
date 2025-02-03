@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LinkedIn Form</title>
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Myriad+Pro:wght@400;700&display=swap');
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f2ef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 500px;
+        }
+        h1 {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Myriad Pro', Arial, sans-serif;
+            font-weight: 750;
+            font-size: 38px;
+            color: #0A66C1; /* LinkedIn blue color */
+        }
+        h1 img {
+            width: 170px;
+            height: auto;
+            margin-right: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            width: 100%;
+            font-size: 18px;
+            padding: 10px;
+            background-color: #0A66C1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0A66C1;
+        }
+        .field-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+    
+    .field-row > div {
+        flex: 1;
+    }
+    #goals, #passions {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        margin-bottom: 15px;
+    }
+
+    #moreOptionsBtn {
+        padding: 8px 16px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+
+    #moreOptionsBtn:hover {
+        background-color: #e0e0e0;
+    }
+    </style>
+        <script>
+        function validateForm() {
+            var userId = decodeURIComponent(document.getElementById("userId").value.trim());
+            var userLink = document.getElementById("userLink").value;
+            var goals = document.getElementById("goals").value;
+            var passions = document.getElementById("passions").value;
+            var englishRegex = /^[A-Za-z0-9\s,./'!?"':]+$/;  
+            var linkedinRegex = /^https:\/\/www\.linkedin\.com\/in\/[\p{L}\p{N}\p{M}\p{S}\p{P}%]+\/?$/u;
+            var userIdRegex = /^[\p{L}\p{N}\p{M}\p{S}\p{P}%]{3,100}$/u;
+            var studentYes = document.getElementById('student-yes').checked;
+            var studentNo = document.getElementById('student-no').checked;
+
+
+            if (!studentYes && !studentNo) {
+                alert('Please fill if you are a student or not.');
+                return false;
+            }
+
+            if (userId === "" && userLink === "") {
+                alert("Please enter at least one of User ID or User Link.");
+                return false;
+            }
+
+            if (userId !== "" && !userIdRegex.test(userId)) {
+                console.error("Invalid User ID:", userId);
+                alert("User ID must be 3-100 characters long and can contain letters, numbers, hyphens, Unicode, emojis, and % signs.");
+                return false;
+            }
+
+            if (userId !== "" && userId.toLowerCase().includes("linkedin")) {
+                alert("User ID cannot contain the word 'LinkedIn'.");
+                return false;
+            }
+
+            if (userLink !== "" && !linkedinRegex.test(userLink)) {
+                alert("Please enter a valid LinkedIn profile URL (format: https://www.linkedin.com/in/username)");
+                return false;
+            }
+
+            // Only validate goals and passions if they are not empty
+            if (goals !== "" && !englishRegex.test(goals)) {
+                alert("Goals must contain only English letters, numbers, spaces, and basic punctuation (,./'!?\"':)");
+                return false;
+            }
+
+            if (passions !== "" && !englishRegex.test(passions)) {
+                alert("Passions must contain only English letters, numbers, spaces, and basic punctuation (,./'!?\"':)");
+                return false;
+            }
+
+            return true;
+        }
+
+        function toggleOptions() {
+            const optionsDiv = document.getElementById('additionalOptions');
+            const button = document.getElementById('moreOptionsBtn');
+            
+            if (optionsDiv.style.display === 'none') {
+                optionsDiv.style.display = 'block';
+                button.textContent = 'Less Options';
+            } else {
+                optionsDiv.style.display = 'none';
+                button.textContent = 'More Options';
+            }
+        }
+        
+        
+    </script>
+    </head>
+    <body>
+        <div class="form-container">
+            <h1>
+                <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/1/19/LinkedIn_logo.svg"
+                    alt="LinkedIn Logo">
+                About Generator
+            </h1>
+            <!-- Flash message placeholder -->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                <p style="color: red;">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            <form action="/submit" method="post"
+                onsubmit="return validateForm()">
+                <p
+                    style="text-align: left; color: #050505; margin-bottom: 12px;"><u>Please
+                        enter at least one of the authentication details:</u><br><br></p>
+                <div class="field-row">
+                    <div>
+                        <label for="userId"><strong>User ID:</strong></label>
+                        <input type="text" id="userId" name="userId">
+                    </div>
+                    <div>
+                        <label for="userLink"><strong>User Link:</strong></label>
+                        <input type="text" id="userLink" name="userLink">
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <label><strong>Are you currently a student?</strong><span style="color: red;">*</span></label>
+                    <br>
+                    <div>
+                        <input type="radio" id="student-yes" name="student"
+                            value="yes">
+                        <label for="student-yes">Yes</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="student-no" name="student"
+                            value="no">
+                        <label for="student-no">No</label>
+                    </div>
+                </div>
+
+                <p
+                    style="text-align: left; color: #0c0c0c; margin-bottom: 12px;"><u>You
+                        can add your goals and passions for better results:</u><br><br></p>
+
+                <label for="goals"><strong>Goals:</strong></label>
+                <textarea id="goals" name="goals"></textarea>
+
+                <label for="passions"><strong>Passions:</strong></label>
+                <textarea id="passions" name="passions"></textarea>
+
+                <div class="field-row">
+                    <button type="button" id="moreOptionsBtn" onclick="toggleOptions()">More Options</button>
+                </div>
+
+                <div id="additionalOptions" style="display: none;">
+                    <div class="field-row">
+                        <label>Choose about format:</label>
+                        <br>
+                        <div>
+                            <input type="radio" id="format-unique" name="format"
+                                value="unique"
+                                title="A creative and standout style that highlights individuality.">
+                            <label for="format-unique">Unique</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="format-formal" name="format"
+                                value="formal"
+                                title="A professional tone suitable for corporate environments.">
+                            <label for="format-formal">Formal</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="format-casual" name="format"
+                                value="casual"
+                                title="A friendly and approachable tone.">
+                            <label for="format-casual">Casual</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="format-concise"
+                                name="format" value="concise"
+                                title="A short and to-the-point summary.">
+                            <label for="format-concise">Concise</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="format-comprehensive"
+                                name="format" value="comprehensive"
+                                title="A detailed and thorough description.">
+                            <label
+                                for="format-comprehensive">Comprehensive</label>
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <label>Choose about length:</label>
+                        
+                        <div>
+                            <input type="radio" id="length_short" name="length"
+                                value="short">
+                            <label for="length_short">short</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="length_medium" name="length"
+                                value="medium length">
+                            <label for="length_short">medium</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="length_long" name="length"
+                                value="long">
+                            <label for="length_short">long</label>
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <label>Choose about focus:</label>
+                        <br>
+                        <div>
+                            <input type="radio" id="focus_skills" name="focus"
+                                value="skills">
+                            <label for="focus_skills">skills</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="focus_goals_passions"
+                                name="focus" value="goals and passions">
+                            <label for="focus_goals_passions">goals and
+                                passions</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="focus_sim_abouts"
+                                name="focus" value="similar abouts">
+                            <label for="focus_sim_abouts">similar abouts</label>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </body>
+</html>

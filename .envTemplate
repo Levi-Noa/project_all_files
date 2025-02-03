@@ -1,0 +1,5 @@
+GOOGLE_API_KEY=<Set-your_google_api_key_here>
+MONGO_URI=<Set-your-mongo-uri>
+FLASK_SECRET_KEY="my-super-secret-key"
+NUM_OF_LINKEDIN_SIMILAR_PROFILES=5
+GEMINI_MODEL="gemini-pro"
