@@ -139,8 +139,12 @@ def generate_from_prompt(user_data):
     """
     logging.info(f"Final API prompt:\n{prompt}")
 
-    response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
-    return response.text
+    try:
+        response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
+        return response.text
+    except Exception as e:
+        logging.error(f"Failed to generate content from Gemini API: {e}")
+        return "Unable to generate LinkedIn About section at this time."
 
 
 def extract_similar_users_abouts(user_id, number_of_top_users, cluster_id, collection_embeddings):
@@ -274,8 +278,11 @@ def generate_about_for_user(user_id, is_student, passion, goals, format, length,
 
     # Generate LinkedIn About section
     linkedin_about = generate_final_response(about_table, user_info, is_student, passion, goals, format, length, focus)
+    if linkedin_about == "Unable to generate LinkedIn About section at this time.":
+        return linkedin_about, -1
     score = calculate_about_score(linkedin_about) if linkedin_about else -1
-
+    if linkedin_about == "Unable to generate LinkedIn About section at this time.":
+        score = -1
     return linkedin_about, score
 
 

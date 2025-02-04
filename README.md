@@ -55,6 +55,7 @@ To see how the feature works, watch this **demo video**:
    ```
    mv .envTemplate .env
    ```
+   
 3. Edit the `.env` file to set your environment variables:
    ```plaintext
    GOOGLE_API_KEY=<Set-your_google_api_key_here>
