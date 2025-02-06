@@ -1,7 +1,20 @@
 # LinkedIn About Generator
-
 ## 📌 Overview
 This project generates a **personalized LinkedIn "About" section** based on similar users and the user's provided details. The feature leverages **embeddings, clustering, and AI models** to create a compelling, tailored description.
+
+---
+
+## 1.1 Concept and Motivation
+In recent years, LinkedIn has become a massive social network with a unique culture centered around the professional and academic careers of its users. Professionals share insights about their work and expertise daily, making the platform a key hub for career growth and networking. However, despite its importance, many users struggle to craft a compelling 'About' section that effectively highlights their skills and experience - only 21% of the users in our data have filled out their 'About' section. Our project aims to bridge this gap by developing an AI-powered tool that generates personalized 'About' sections, helping users create impactful profiles that better showcase their professional strengths.
+
+## 1.2 Workflow
+Our workflow consists of five main stages: Data Collection, Scoring and Creating a Base Group, Clustering, Finding Similar Users, and Generating.
+
+- **Data Collection**: We begin by scraping job position data from the O*NET website, extracting information on 1,016 different positions, each with its associated common tasks.
+- **Scoring and Creating a Base Group**: We develop a scoring system for LinkedIn 'About' sections to assess their effectiveness. This helps create a base group of well-structured profiles, which serves as a reference for generating new content.
+- **Clustering**: We create a text representing each user based on its attributes, and then use the BERT embedding of this text as the initial vector representation of the users. We then assign the target user to a cluster. The clusters were computed using the K-Means algorithm, with K = 148, that was trained only on users with an existing 'About' section.
+- **Finding Similar Users**: We identify similar users in the target user's cluster, and we search only users that have an 'About' score above a predefined threshold. Similarity is computed by comparing their attributes and job roles using embedding-based cosine similarity, ensuring personalized and relevant content generation.
+- **Generating**: We use the Gemini API to generate a personalized 'About' section for the target user, incorporating insights from previous stages along with their basic data generation.
 
 ---
 
@@ -51,7 +64,7 @@ To see how the feature works, watch this **demo video**:
    git clone https://github.com/Levi-Noa/project_all_files.git
    ```
 
-2. Rename `.envTemplate` to `.env` and set the environment variables:
+2. Rename `.envTemplate` to `.env` :
    ```
    mv .envTemplate .env
    ```
@@ -170,7 +183,6 @@ When you run the Docker container, the system initializes the environment, loads
 **What this means:**
 
 - The system initializes and connects to MongoDB.
-- It retrieves the total number of users in the embeddings collection.
 - Any warnings (like missing Hadoop libraries) can be ignored.
 
 #### 2️⃣ Processing a Request
@@ -188,8 +200,7 @@ When a request is sent to generate a LinkedIn "About" section, logs will appear 
 
 **What this means:**
 
-- The system fetches user data from MongoDB.
-- It finds which cluster the user belongs to, allowing the AI model to compare similar profiles.
+- The system fetches user data from MongoDB and finds which cluster the user belongs to, allowing the AI model to compare similar profiles.
 
 #### 3️⃣ Extracting Similar Users
 
@@ -200,7 +211,7 @@ The system retrieves similar users based on cluster embeddings.
    ```plaintext
    <timestamp> INFO - Extracting similar users for user_id <USER_ID> in cluster <CLUSTER_ID>...
    <timestamp> INFO - Fetching similar users for user <USER_ID> in cluster <CLUSTER_ID>...
-   <timestamp> INFO - Found <TOTAL_USERS> users in cluster <CLUSTER_ID> before filtering.
+   <timestamp> INFO - Found similar users users in cluster <CLUSTER_ID> before filtering.
    <timestamp> INFO - Users with 'About' score >= 6: <FILTERED_USERS> out of <TOTAL_USERS>
    ```
 
@@ -208,7 +219,6 @@ The system retrieves similar users based on cluster embeddings.
 
 - The system finds all users in the same cluster.
 - It filters users with a high-quality "About" section (score >= 6).
-- The number of filtered users is displayed.
 
 #### 4️⃣ Generating the AI Prompt
 
@@ -233,9 +243,9 @@ Once the AI processes the request, the LinkedIn About section is generated.
 
 **Expected Output:**
 
-   ```plaintext
-   <timestamp> INFO - <IP_ADDRESS> - - [<DATE>] "POST /submit HTTP/1.1" 200 -
-   ```
+```plaintext
+<timestamp> INFO - <IP_ADDRESS> - - [<DATE>] "POST /submit HTTP/1.1" 200 -
+```
 
 **What this means:**
 
@@ -243,19 +253,6 @@ Once the AI processes the request, the LinkedIn About section is generated.
 - The HTTP 200 status confirms successful processing.
 - The output is now available in the web UI or API response.
 
-Once the AI processes the request, the LinkedIn About section is generated.
-
-**Expected Output:**
-
-   ```plaintext
-   <timestamp> INFO - <IP_ADDRESS> - - [<DATE>] "POST /submit HTTP/1.1" 200 -
-   ```
-
-**What this means:**
-
-- The AI successfully generated the "About" section.
-- The HTTP 200 status confirms successful processing.
-- The output is now available in the web UI or API response.
 
 #### 🔍 Troubleshooting & Monitoring Logs
 
