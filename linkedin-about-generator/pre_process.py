@@ -35,7 +35,7 @@ try:
     )
     db = client["linkdin_generator_database"]
     collection_basic_data = db["basic_data"]
-    collection_embeddings = db["embedding_users"]
+    collection_embeddings = db["embedding_with_index"]
     logging.info("Connected to MongoDB.")
 except Exception as e:
     logging.error(f"Failed to connect to MongoDB: {e}")
@@ -53,4 +53,3 @@ schema = StructType([
 ])
 user_ids = collection_embeddings.distinct("id")
 logging.info(f"Total users in embedding_users collection: {len(user_ids)}")
-logging.info(f"Sample user IDs: {user_ids[:10]}")

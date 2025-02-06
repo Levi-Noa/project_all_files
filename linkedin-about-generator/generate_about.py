@@ -148,24 +148,15 @@ def generate_from_prompt(user_data):
 
 
 def extract_similar_users_abouts(user_id, number_of_top_users, cluster_id, collection_embeddings):
-    """
-    Extracts similar users' "About" sections from MongoDB, filters users based on the 'About' score,
-    computes cosine similarity, and returns the most relevant about sections.
-
-    - Filters out users with an 'About' score <= 6.
-    - Computes cosine similarity only with valid users.
-    """
     logging.info(f"Extracting similar users for user_id {user_id} in cluster {cluster_id}...")
 
     # Step 1: Fetch the target user's embeddings
     user_data = collection_embeddings.find_one({"id": user_id}, {"_id": 0, "experience_averaged_embeddings": 1})
-    
     if not user_data or "experience_averaged_embeddings" not in user_data:
         logging.warning(f"No embeddings found for user_id {user_id}.")
         return []
 
     user_embedding = np.array(user_data["experience_averaged_embeddings"]).reshape(1, -1)
-    logging.info(f"Fetching similar users for user {user_id} in cluster {cluster_id}...")
 
     # Step 2: Fetch similar users in **one optimized query**
     similar_users_cursor = collection_embeddings.find(
@@ -173,18 +164,19 @@ def extract_similar_users_abouts(user_id, number_of_top_users, cluster_id, colle
         {"id": 1, "about": 1, "experience_averaged_embeddings": 1, "_id": 0}  
     )
     similar_users_list = list(similar_users_cursor)
-
     logging.info(f"Found {len(similar_users_list)} users in cluster {cluster_id} before filtering.")
 
     if not similar_users_list:
         return []
     
     # Step 3: Filter users with an 'About' score >= 6
-    # Vectorized filtering
-    filtered_users = [
-        user for user in similar_users_list 
-        if "about" in user and "experience_averaged_embeddings" in user and calculate_about_score(user["about"]) >= 6
-    ]
+    filtered_users = []
+    for user in similar_users_list:
+        if "about" in user and "experience_averaged_embeddings" in user:
+            about_text = user["about"]
+            score = calculate_about_score(about_text)
+            if score >= 6:
+                filtered_users.append(user)
 
     logging.info(f"Users with 'About' score >= 6: {len(filtered_users)} out of {len(similar_users_list)}")
 
@@ -194,23 +186,44 @@ def extract_similar_users_abouts(user_id, number_of_top_users, cluster_id, colle
 
     # Step 4: Extract embeddings and about sections
     about_sections = [user["about"] for user in filtered_users]
-    user_embeddings_np = np.array([user["experience_averaged_embeddings"] for user in filtered_users])
+    user_embeddings_np = []
+    for user in filtered_users:
+        embedding = user["experience_averaged_embeddings"]
+        if isinstance(embedding, dict):
+            if 'array' in embedding:
+                embedding = embedding['array']
+            elif 'values' in embedding:
+                embedding = embedding['values']
+            else:
+                logging.error(f"Invalid embedding format for user {user['id']}: {embedding}")
+                return []
+        user_embeddings_np.append(embedding)
+
+    user_embeddings_np = np.array(user_embeddings_np)
+
     if user_embeddings_np.size == 0:
         logging.warning("No valid embeddings found among similar users.")
         return []
 
     # Step 5: Compute cosine similarity scores
-    similarity_scores = cosine_similarity(user_embedding, user_embeddings_np).flatten()
+    try:
+        similarity_scores = cosine_similarity(user_embedding, user_embeddings_np).flatten()
+        logging.info(f"Similarity scores (first 3): {similarity_scores[:3]}")  # Show only the first 3 scores
+    except Exception as e:
+        logging.error(f"Error computing cosine similarity: {e}")
+        return []
 
     # Step 6: Select top N similar users
     top_indices = np.argsort(similarity_scores)[-number_of_top_users:][::-1]  # Highest similarity first
 
     # Step 7: Extract top users' "About" sections
     top_about_sections = [about_sections[i] for i in top_indices if i < len(about_sections)]
+    logging.info(f"Top about sections (first 50 chars of first 1): {[section[:50] for section in top_about_sections[:1]]}...")  # Show only the first 50 characters of the first about section
 
     logging.info(f"Found {len(top_about_sections)} relevant 'About' sections for user_id {user_id}.")
 
     return top_about_sections
+
 
 
 def generate_final_response(about_table, user_info, is_student, passion, goals, format, length, focus):
@@ -254,7 +267,7 @@ def generate_about_for_user(user_id, is_student, passion, goals, format, length,
     client = MongoClient(MONGO_URI)
     db = client["linkdin_generator_database"]
     collection_basic_data = db["basic_data"]
-    collection_embeddings = db["embedding_users"]
+    collection_embeddings = db["embedding_with_index"]
 
     # Fetch user data from MongoDB
     user_info = extract_user_info(user_id, collection_basic_data)
