@@ -86,7 +86,7 @@ def submit():
             
     goals = request.form.get('goals')
     passions = request.form.get('passions')
-    is_student = request.form.get('student') == 'Yes'
+    is_student = request.form.get('student') == 'yes'
     format_section = request.form.get('format')
     length = request.form.get('length')
     focus = request.form.get('focus')
