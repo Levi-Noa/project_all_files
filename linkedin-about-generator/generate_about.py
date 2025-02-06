@@ -207,7 +207,7 @@ def extract_similar_users_abouts(user_id, number_of_top_users, cluster_id, colle
 
     # Step 5: Compute cosine similarity scores
     try:
-        similarity_scores = cosine_similarity(user_embedding, user_embeddings_np).flatten()
+        similarity_scores = cosißne_similarity(user_embedding, user_embeddings_np).flatten()
         logging.info(f"Similarity scores (first 3): {similarity_scores[:3]}")  # Show only the first 3 scores
     except Exception as e:
         logging.error(f"Error computing cosine similarity: {e}")
