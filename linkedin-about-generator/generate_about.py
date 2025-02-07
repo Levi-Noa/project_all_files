@@ -95,7 +95,6 @@ def calculate_about_score(about_text):
         words = about_text.lower().split()
         engagement_score = len(set(words)) / len(words) if words else 0
         score = (0.4 * length_score) + (0.4 * professionalism_score) + (0.2 * engagement_score)
-        logging.info(f"Calculated about score: {score * 10}")
         return score * 10
     except Exception as e:
         logging.error(f"Error calculating about score: {e}")
