@@ -102,7 +102,14 @@ To build and run the Docker image for this application, follow these steps:
    ```
    docker run -p 5001:5000 linkedin-about-generator
    ```
----
+   **After running the Docker container, open your web browser and navigate to:**
+
+      ```
+      http://localhost:5001/
+      ```
+
+      **to see the application.**
+   ---
 
 ## 📭 API Endpoints
 **POST `/submit`**  
