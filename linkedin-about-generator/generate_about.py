@@ -69,6 +69,7 @@ def extract_user_info(user_id, collection_basic_data):
         return None  # Return None if still not found
 
     if user_basic:
+        logging.info(f"User {user_id} found in MongoDB.")
         return {
             "id": user_id,
             "about": "Not available",
@@ -94,8 +95,10 @@ def calculate_about_score(about_text):
         words = about_text.lower().split()
         engagement_score = len(set(words)) / len(words) if words else 0
         score = (0.4 * length_score) + (0.4 * professionalism_score) + (0.2 * engagement_score)
+        logging.info(f"Calculated about score: {score * 10}")
         return score * 10
-    except Exception:
+    except Exception as e:
+        logging.error(f"Error calculating about score: {e}")
         return 0.0
 
 
@@ -141,6 +144,7 @@ def generate_from_prompt(user_data):
 
     try:
         response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
+        logging.info("Generated content successfully.")
         return response.text
     except Exception as e:
         logging.error(f"Failed to generate content from Gemini API: {e}")
@@ -272,6 +276,7 @@ def generate_about_for_user(user_id, is_student, passion, goals, format, length,
     # Fetch user data from MongoDB
     user_info = extract_user_info(user_id, collection_basic_data)
     if not user_info:
+        logging.error(f"User {user_id} not found in MongoDB.")
         return None, -1
 
     # Find similar profiles
@@ -292,11 +297,10 @@ def generate_about_for_user(user_id, is_student, passion, goals, format, length,
     # Generate LinkedIn About section
     linkedin_about = generate_final_response(about_table, user_info, is_student, passion, goals, format, length, focus)
     if linkedin_about == "Unable to generate LinkedIn About section at this time.":
+        logging.error("Failed to generate LinkedIn About section.")
         return linkedin_about, -1
     score = calculate_about_score(linkedin_about) if linkedin_about else -1
     if linkedin_about == "Unable to generate LinkedIn About section at this time.":
         score = -1
+    logging.info(f"Generated LinkedIn About section with score: {score}")
     return linkedin_about, score
-
-
-

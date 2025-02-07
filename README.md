@@ -170,8 +170,7 @@ When you run the Docker container, the system initializes the environment, loads
    ```bash
    docker run -p 5001:5000 linkedin-about-generator
    ```
-
-**Expected Output:**
+   **Expected Output:**
 
    ```plaintext
    <timestamp> INFO - Connecting to MongoDB...
@@ -180,16 +179,16 @@ When you run the Docker container, the system initializes the environment, loads
    <timestamp> INFO - Closing down clientserver connection
    ```
 
-**What this means:**
+   **Explanation:**
 
-- The system initializes and connects to MongoDB.
-- Any warnings (like missing Hadoop libraries) can be ignored.
+   - System initializes and connects to MongoDB.
+   - Ignore warnings like missing Hadoop libraries.
 
-#### 2️⃣ Processing a Request
+   #### 2️⃣ Processing a Request
 
-When a request is sent to generate a LinkedIn "About" section, logs will appear in the terminal.
+   Logs appear when generating a LinkedIn "About" section.
 
-**Example Request (via API or Web Form Submission):**
+   **Example Request:**
 
    ```plaintext
    <timestamp> INFO - Generating LinkedIn About section for user_id: <USER_ID>
@@ -198,61 +197,58 @@ When a request is sent to generate a LinkedIn "About" section, logs will appear 
    <timestamp> INFO - User <USER_ID> is assigned to cluster: <CLUSTER_ID>
    ```
 
-**What this means:**
+   **Explanation:**
 
-- The system fetches user data from MongoDB and finds which cluster the user belongs to, allowing the AI model to compare similar profiles.
+   - Fetches user data and assigns cluster for comparison.
 
-#### 3️⃣ Extracting Similar Users
+   #### 3️⃣ Extracting Similar Users
 
-The system retrieves similar users based on cluster embeddings.
+   Retrieves similar users based on cluster embeddings.
 
-**Expected Output:**
+   **Expected Output:**
 
    ```plaintext
    <timestamp> INFO - Extracting similar users for user_id <USER_ID> in cluster <CLUSTER_ID>...
    <timestamp> INFO - Fetching similar users for user <USER_ID> in cluster <CLUSTER_ID>...
-   <timestamp> INFO - Found similar users users in cluster <CLUSTER_ID> before filtering.
+   <timestamp> INFO - Found similar users in cluster <CLUSTER_ID> before filtering.
    <timestamp> INFO - Users with 'About' score >= 6: <FILTERED_USERS> out of <TOTAL_USERS>
    ```
 
-**What this means:**
+   **Explanation:**
 
-- The system finds all users in the same cluster.
-- It filters users with a high-quality "About" section (score >= 6).
+   - Finds and filters users with high-quality "About" sections.
 
-#### 4️⃣ Generating the AI Prompt
+   #### 4️⃣ Generating the AI Prompt
 
-The system builds a structured prompt for Google Gemini AI.
+   Builds a structured prompt for Google Gemini AI.
 
-**Expected Output:**
+   **Expected Output:**
 
    ```plaintext
    <timestamp> INFO - Found <NUMBER_OF_SIMILAR_USERS> relevant 'About' sections for user_id <USER_ID>.
    <timestamp> INFO - Final API prompt:
-   (Here, the full structured prompt is displayed.)
+   (Full structured prompt displayed here.)
    ```
 
-**What this means:**
+   **Explanation:**
 
-- The AI receives structured data with key details.
-- The AI incorporates similar users' insights to generate a personalized LinkedIn "About" section.
+   - AI receives structured data to generate a personalized "About" section.
 
-#### 5️⃣ Generating & Returning the Final Output
+   #### 5️⃣ Generating & Returning the Final Output
 
-Once the AI processes the request, the LinkedIn About section is generated.
+   AI processes the request and generates the LinkedIn About section.
 
-**Expected Output:**
+   **Expected Output:**
 
-```plaintext
-<timestamp> INFO - <IP_ADDRESS> - - [<DATE>] "POST /submit HTTP/1.1" 200 -
-```
+   ```plaintext
+   <timestamp> INFO - <IP_ADDRESS> - - [<DATE>] "POST /submit HTTP/1.1" 200 -
+   ```
 
-**What this means:**
+   **Explanation:**
 
-- The AI successfully generated the "About" section.
-- The HTTP 200 status confirms successful processing.
-- The output is now available in the web UI or API response.
-
+   - AI successfully generated the "About" section.
+   - HTTP 200 status confirms successful processing.
+   - Output available in web UI or API response.
 
 #### 🔍 Troubleshooting & Monitoring Logs
 
