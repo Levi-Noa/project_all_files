@@ -1,13 +1,24 @@
+<div align="center">
+
 # LinkedIn About Generator
+<p align='center' style="text-align:center;font-size:1em;">
+   Noa Levi</a>&nbsp;,&nbsp;
+    Dan Nadler&nbsp;,&nbsp;
+    Guy Sagiv&nbsp;&nbsp;
+    <br/> 
+    Technion - Israel Institute of Technology <br/> 
+   </div>
+
 ## 📌 Overview
-This project generates a **personalized LinkedIn "About" section** based on similar users and the user's provided details. The feature leverages **embeddings, clustering, and AI models** to create a compelling, tailored description.
 
----
+This project generates a personalized LinkedIn "About" section based on similar users and the user's provided details. The feature leverages embeddings, clustering, and AI models to create a compelling, tailored description.
 
-## 1.1 Concept and Motivation
+
+
+## Concept and Motivation
 In recent years, LinkedIn has become a massive social network with a unique culture centered around the professional and academic careers of its users. Professionals share insights about their work and expertise daily, making the platform a key hub for career growth and networking. However, despite its importance, many users struggle to craft a compelling 'About' section that effectively highlights their skills and experience - only 21% of the users in our data have filled out their 'About' section. Our project aims to bridge this gap by developing an AI-powered tool that generates personalized 'About' sections, helping users create impactful profiles that better showcase their professional strengths.
 
-## 1.2 Workflow
+## Workflow
 Our workflow consists of five main stages: Data Collection, Scoring and Creating a Base Group, Clustering, Finding Similar Users, and Generating.
 
 - **Data Collection**: We begin by scraping job position data from the O*NET website, extracting information on 1,016 different positions, each with its associated common tasks.
@@ -17,13 +28,10 @@ Our workflow consists of five main stages: Data Collection, Scoring and Creating
 - **Generating**: We use the Gemini API to generate a personalized 'About' section for the target user, incorporating insights from previous stages along with their basic data generation.
 
 ---
+<div align="center">
+   <img src="Readme files/workflow.jpeg" alt="Workflow Diagram" />
+</div>
 
-## 🚀 Usage
-
-Send a request with the relevant parameters to generate a **custom LinkedIn "About" section**.  
-The system analyzes **similar user profiles** and user-provided data (via `userId` or `userLink`) to craft a professional summary.  
-
----
 
 ## 🎥 Video Demonstration
 To see how the feature works, watch this **demo video**:  
@@ -31,7 +39,6 @@ To see how the feature works, watch this **demo video**:
 
 📌 **Click the image above to watch the tutorial!**  
 
----
 
 ## 📂 Project Structure
 ```
